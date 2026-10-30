@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+reports/output/
+
+# Report copies saved in the project root (contain test patient data)
+/recall_status_report_*

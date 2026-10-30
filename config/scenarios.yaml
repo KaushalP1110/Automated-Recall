@@ -1,0 +1,61 @@
+# The five Automated Recall status scenarios.
+#
+# Every date is relative to the day the script runs ("today"), so the check
+# works on any day:
+#   due_in_days:  recall due date = today + N   (negative = already passed)
+#   appointment:  none | scheduled | completed
+#   appt_in_days: appointment date = today + N  (scheduled -> future, completed -> today/past)
+#   due_on / appt_on: month_start  -> the 1st of the run's month (instead of *_in_days)
+#
+# The appointment always carries the recall type's own trigger procedures
+# (ProphyRecall -> T1356 Exam + T3541 Prophy, Adult), which is what makes
+# OpenDental - and Adit - treat it as "the same recall type".
+#
+# expected_status: every label must be shown for the patient in
+# Adit Engage -> Reports -> Automated Recall (case-insensitive).
+#
+# Patients: one per scenario, must be active in opendental_123. Fill in
+# first_name/last_name (and pat_num if the name is not unique).
+
+scenarios:
+  - id: S1
+    name: "Upcoming recall - not booked"
+    patient: {first_name: "Kaushal", last_name: "Recall", pat_num: 311}
+    due_in_days: 45
+    appointment: none
+    expected_status: ["Unscheduled"]
+
+  - id: S2
+    name: "Upcoming recall - appointment booked"
+    patient: {first_name: "Krutik", last_name: "Recall", pat_num: 312}
+    due_in_days: 45
+    appointment: scheduled
+    appt_in_days: 25
+    expected_status: ["Scheduled"]
+
+  - id: S3
+    name: "Missed recall - not booked"
+    patient: {first_name: "Shreya", last_name: "Recall", pat_num: 313}
+    due_in_days: -20
+    appointment: none
+    expected_status: ["Overdue", "Unscheduled"]
+
+  - id: S4
+    name: "Missed recall - appointment booked"
+    patient: {first_name: "Devarsh", last_name: "Recall", pat_num: 314}
+    due_in_days: -20
+    appointment: scheduled
+    appt_in_days: 10
+    expected_status: ["Overdue", "Scheduled"]
+
+  # Completed: the due date and the completed appointment must be in the SAME
+  # month - Adit shows "Completed" in that due month's report. Both are pinned
+  # to the 1st of the CURRENT month: on 5 Oct 2026 a recall due and completed
+  # on 30 Sep (previous month) showed "Overdue & Unsched" in Adit instead.
+  - id: S5
+    name: "Recall visit completed"
+    patient: {first_name: "Jay", last_name: "Recall", pat_num: 315}
+    due_on: month_start
+    appointment: completed
+    appt_on: month_start
+    expected_status: ["Completed"]

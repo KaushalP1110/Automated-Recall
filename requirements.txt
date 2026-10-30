@@ -1,0 +1,4 @@
+requests>=2.31.0
+PyMySQL==1.2.0
+PyYAML==6.0.3
+google-auth>=2.29.0
